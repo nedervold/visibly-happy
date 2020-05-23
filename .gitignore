@@ -7,5 +7,16 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+
+# emacs cruft
+\#*
+*~
+
+# Eclipse cruft
+.classpath
+.project
+.settings
+
+# macOS cruft
+.DS_Store
