@@ -19,13 +19,13 @@ import nz.sodium.Unit;
 
 public class HappyWindow extends JFrame {
 
-	private final String[] initSourceLines = new String[] { "%tokentype {()}", "%token UNIT {$$}", "%%",
-			"foo : {- empty -} {()}" };
+	private final String[] initSourceLines = new String[] { "{", "module Parser where", "}", "%tokentype {()}",
+			"%token UNIT {$$}", "%%", "foo : {- empty -} {()}" };
 
 	private final String initSourceX = Arrays.asList(initSourceLines).stream().map((s) -> s + "\n")
 			.collect(Collectors.joining());
 
-	public final Stream<String> outputStream;
+	public final Stream<HappySource> outputStream;
 
 	public HappyWindow(final String title) throws HeadlessException {
 		super(title);
@@ -49,7 +49,7 @@ public class HappyWindow extends JFrame {
 
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
-			return runOutputStream.snapshot(sourcePane.outputCell());
+			return runOutputStream.snapshot(sourcePane.outputCell()).map(HappySource::new);
 		});
 		setVisible(true);
 	}

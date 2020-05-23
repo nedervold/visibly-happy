@@ -1,6 +1,14 @@
 package org.nedervold.visibly_happy;
 
-import java.util.Random;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -18,16 +26,41 @@ import nz.sodium.StreamSink;
 
 public class IOFactory {
 
-	public static Tuple3<Integer, String, String> runHappy(String stdin) {
-		Random random = new Random();
-		boolean failed = random.nextBoolean();
-		int exitCode;
-		if (failed) {
-			exitCode = random.nextInt(254) + 1;
-		} else
-			exitCode = 0;
+	private static void deleteAll(final File entry) {
+		final File[] contents = entry.listFiles();
+		if (contents == null) {
+			// It's a file, not a directory.
+			entry.delete();
+		} else {
+			// It's a directory; delete the directory's contents first
+			for (final File file : contents) {
+				deleteAll(file);
+			}
+			entry.delete();
+		}
+	}
 
-		return Tuple.of(exitCode, "stderr", stdin);
+	private static String drainStream(final InputStream inputStream) throws IOException {
+		final StringBuilder sb = new StringBuilder();
+		final InputStreamReader ir = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+		final BufferedReader br = new BufferedReader(ir);
+		String line;
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+			sb.append('\n');
+		}
+		return sb.toString();
+	}
+
+	public static String findExecutable(final String name) {
+		final String[] executablePaths = System.getenv("PATH").split(File.pathSeparator);
+		for (final String dirname : executablePaths) {
+			final File file = new File(dirname, name);
+			if (file.isFile() && file.canExecute()) {
+				return file.getAbsolutePath();
+			}
+		}
+		throw new AssertionError("Found no executable " + name + " in " + String.join(", ", executablePaths) + ".");
 	}
 
 	public static <R, S> Tuple2<Runnable, Stream<Try<R>>> mapInThread(final Stream<S> inputStream,
@@ -58,6 +91,26 @@ public class IOFactory {
 			}
 		};
 		return Tuple.of(pump, outputStream);
+	}
+
+	public static Tuple3<Integer, String, String> runHappy(final String stdin)
+			throws IOException, InterruptedException {
+		final Path tempDir = Files.createTempDirectory("visibly-happy");
+		try {
+			final Path happyFile = tempDir.resolve("Parser.y");
+			final FileWriter fw = new FileWriter(happyFile.toFile());
+			fw.write(stdin);
+			fw.close();
+			final ProcessBuilder builder = new ProcessBuilder().command(findExecutable("happy"), "Parser.y")
+					.directory(tempDir.toFile());
+			final Process process = builder.start();
+			final int exitCode = process.waitFor();
+			final String stderr = drainStream(process.getErrorStream());
+			final String stdout = drainStream(process.getInputStream());
+			return Tuple.of(exitCode, stderr, stdout);
+		} finally {
+			deleteAll(tempDir.toFile());
+		}
 	}
 
 	private IOFactory() {

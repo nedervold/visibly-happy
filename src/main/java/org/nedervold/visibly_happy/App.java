@@ -13,7 +13,7 @@ public class App {
 		SwingUtilities.invokeLater(() -> {
 			final HappyWindow happyWindow = new HappyWindow("Happy Window");
 			final Tuple2<Runnable, Stream<Try<Tuple3<Integer, String, String>>>> x = IOFactory
-					.mapInThread(happyWindow.outputStream, IOFactory::runHappy);
+					.mapInThread(happyWindow.outputStream.map(HappySource::getSource), IOFactory::runHappy);
 			// TODO How can we plan to interrupt the thread?
 			new Thread(x._1).start();
 			final HappyOutputWindow outputWindow = new HappyOutputWindow("Output", x._2.map((t) -> {
