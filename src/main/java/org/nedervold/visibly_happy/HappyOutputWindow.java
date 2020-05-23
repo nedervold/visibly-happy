@@ -1,7 +1,9 @@
 package org.nedervold.visibly_happy;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.HeadlessException;
 
 import javax.swing.BorderFactory;
@@ -24,6 +26,8 @@ public class HappyOutputWindow extends JFrame {
 		super(title);
 		final Container cp = getContentPane();
 		Transaction.runVoid(() -> {
+			final Cell<Color> colorCell = processResult
+					.map((t) -> (t._1 == 0 ? Color.green.darker().darker() : Color.red)).hold(Color.black);
 			final Stream<String> exitCodeStream = processResult.map((t) -> {
 				final int exitCode = t._1;
 				if (exitCode == 0) {
@@ -33,7 +37,10 @@ public class HappyOutputWindow extends JFrame {
 				}
 			});
 			final Cell<String> exitCodeCell = exitCodeStream.hold("No process.");
-			final DLabel exitCodeLabel = new DLabel(exitCodeCell);
+			final DLabel exitCodeLabel = new DColorLabel(exitCodeCell, colorCell);
+			exitCodeLabel.setFont(exitCodeLabel.getFont().deriveFont(Font.BOLD, 16.0f));
+			final int S = 8;
+			exitCodeLabel.setBorder(BorderFactory.createEmptyBorder(S, S, S, S));
 			cp.add(exitCodeLabel, BorderLayout.NORTH);
 
 			final DTextArea stderrPane = new DTextArea(20, 80, processResult.map(Tuple3::_2).hold(""));
@@ -49,7 +56,6 @@ public class HappyOutputWindow extends JFrame {
 			cp.add(splitPane, BorderLayout.CENTER);
 			pack();
 		});
-		// setVisible(true);
 	}
 
 }
