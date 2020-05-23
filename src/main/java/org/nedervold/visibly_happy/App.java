@@ -1,7 +1,11 @@
 package org.nedervold.visibly_happy;
 
+import javax.swing.SwingUtilities;
+
 public class App {
-    public static void main(String[] args){
-	System.out.println("Hello, from visibly-happy.");
-    }
+	public static void main(final String[] args) {
+		SwingUtilities.invokeLater(() -> {
+			new HappyWindow("Happy Window");
+		});
+	}
 }
