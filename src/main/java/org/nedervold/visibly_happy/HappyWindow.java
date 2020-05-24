@@ -9,6 +9,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
+import org.nedervold.visibly_happy.data.HappySource;
+
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import nz.sodium.Cell;
@@ -20,8 +22,7 @@ import nz.sodium.Unit;
 public class HappyWindow extends JFrame {
 
 	private static final int COLS = 80;
-	private static final String DIRECTIVES_SOURCE = TextUtils
-			.unlines(new String[] { "%tokentype {()}", "%token UNIT {$$}" });
+	private static final String DIRECTIVES_SOURCE = TextUtils.unlines(new String[] { "%token UNIT {$$}" });
 	private static final String GRAMMAR_SOURCE = TextUtils.unlines(new String[] { "foo : {- empty -} {()}" });
 	private static final String HEADER_SOURCE = TextUtils.unlines(new String[] { "module Parser where" });
 	private static final StreamSink<String> NEVER = new StreamSink<>();
@@ -29,12 +30,12 @@ public class HappyWindow extends JFrame {
 	private static final int STARTING_LINE_NUM = 1;
 
 	private static final String TRAILER_SOURCE = "";
-	public final Stream<HappySource> runOutputStream;
 	public final Cell<HappySource> happySourceCell;
+	public final Stream<HappySource> runOutputStream;
 
 	public HappyWindow(final String title) throws HeadlessException {
 		super(title);
-		Tuple2<Cell<HappySource>, Stream<HappySource>> t = Transaction.run(() -> {
+		final Tuple2<Cell<HappySource>, Stream<HappySource>> t = Transaction.run(() -> {
 			final Container contentPane = getContentPane();
 			final Box contents = Box.createVerticalBox();
 
@@ -74,15 +75,15 @@ public class HappyWindow extends JFrame {
 
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
-			Cell<HappySource> happySourceCell = headerPane.outputCell().lift(directivesPane.outputCell(),
+			final Cell<HappySource> happySourceCell = headerPane.outputCell().lift(directivesPane.outputCell(),
 					grammarPane.outputCell(), trailerPane.outputCell(),
 					(header, dirs, grammar, trailer) -> new HappySource(header, dirs, grammar, trailer));
-			Stream<HappySource> runHappySourceStream = runOutputStream.snapshot(happySourceCell,
+			final Stream<HappySource> runHappySourceStream = runOutputStream.snapshot(happySourceCell,
 					(u, happySource) -> happySource);
 			return Tuple.of(happySourceCell, runHappySourceStream);
 		});
-		this.happySourceCell = t._1;
-		this.runOutputStream = t._2;
+		happySourceCell = t._1;
+		runOutputStream = t._2;
 		setVisible(true);
 	}
 

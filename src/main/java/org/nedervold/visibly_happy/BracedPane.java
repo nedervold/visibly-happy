@@ -43,7 +43,7 @@ public class BracedPane extends EScrollingSyntaxTextArea {
 
 	@Override
 	public Cell<String> outputCell() {
-		return super.outputCell().map(TextUtils::wrapInBraces);
+		return super.outputCell();
 	}
 
 	public void unlisten() {

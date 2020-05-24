@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 
 public class TextUtils {
 
-	static final String PERCENTS = "\n%%\n\n";
+	public static final String PERCENTS = "\n%%\n\n";
 
-	static final int PERCENTS_LINES = countLines(ensureFinalNewline(PERCENTS));
+	public static final int PERCENTS_LINES = countLines(ensureFinalNewline(PERCENTS));
 
 	protected static int countLines(final String s) {
 		int res = 0;
@@ -19,7 +19,7 @@ public class TextUtils {
 		return res;
 	}
 
-	protected static String ensureFinalNewline(final String str) {
+	public static String ensureFinalNewline(final String str) {
 		if (str.isEmpty() || str.endsWith("\n")) {
 			return str;
 		} else {
@@ -31,7 +31,7 @@ public class TextUtils {
 		return Arrays.asList(lines).stream().map((s) -> s + "\n").collect(Collectors.joining());
 	}
 
-	protected static String wrapInBraces(final String s) {
+	public static String wrapInBraces(final String s) {
 		if (s.isEmpty()) {
 			return s;
 		} else {

@@ -10,13 +10,14 @@ import javax.swing.JComponent;
 import org.nedervold.nawidgets.display.DBox;
 import org.nedervold.nawidgets.editor.ECheckBox;
 import org.nedervold.nawidgets.editor.Editor;
+import org.nedervold.visibly_happy.data.Code;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple3;
 import nz.sodium.Cell;
 import nz.sodium.Stream;
 
-public class CodePane extends DBox<JComponent> implements Editor<String> {
+public class CodePane extends DBox<JComponent> implements Editor<Code> {
 	private static Tuple3<ECheckBox, BracedPane, Cell<List<JComponent>>> createComponents(final int rows,
 			final int cols, final Stream<String> inputStream, final String initValue,
 			final Cell<Integer> inputLineNumberCell) {
@@ -55,13 +56,13 @@ public class CodePane extends DBox<JComponent> implements Editor<String> {
 
 	public Cell<Integer> lineCountCell() {
 		final Cell<Boolean> includeCell = checkBox.outputCell();
-		return includeCell.lift(bracedPane.lineCountCell(), (b, lc) -> b ? lc : 0);
+		return includeCell.lift(bracedPane.lineCountCell(), (b, lc) -> b ? 2 + lc : 0);
 	}
 
 	@Override
-	public Cell<String> outputCell() {
+	public Cell<Code> outputCell() {
 		final Cell<Boolean> includeCell = checkBox.outputCell();
-		return includeCell.lift(bracedPane.outputCell(), (b, lc) -> b ? lc : "");
+		return includeCell.lift(bracedPane.outputCell(), (b, lc) -> b ? lc : "").map(Code::new);
 	}
 
 	@Override
