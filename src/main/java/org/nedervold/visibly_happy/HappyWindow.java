@@ -3,12 +3,9 @@ package org.nedervold.visibly_happy;
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-
-import org.nedervold.nawidgets.display.DLabel;
 
 import nz.sodium.Cell;
 import nz.sodium.Stream;
@@ -18,10 +15,16 @@ import nz.sodium.Unit;
 
 public class HappyWindow extends JFrame {
 
-	private static final String preSource = TextUtils.unlines(
-			new String[] { "{", "module Parser where", "}", "%tokentype {()}", "%token UNIT {$$}" });
-	private static final String postSource = TextUtils.unlines(new String[] { "foo : {- empty -} {()}" });
+	private static final int COLS = 80;
+	private static final String DIRECTIVES_SOURCE = TextUtils
+			.unlines(new String[] { "%tokentype {()}", "%token UNIT {$$}" });
+	private static final String GRAMMAR_SOURCE = TextUtils.unlines(new String[] { "foo : {- empty -} {()}" });
+	private static final String HEADER_SOURCE = TextUtils.unlines(new String[] { "module Parser where" });
+	private static final StreamSink<String> NEVER = new StreamSink<>();
+	private static final int ROWS = 15;
+	private static final int STARTING_LINE_NUM = 1;
 
+	private static final String TRAILER_SOURCE = "";
 	public final Stream<HappySource> outputStream;
 
 	public HappyWindow(final String title) throws HeadlessException {
@@ -34,27 +37,36 @@ public class HappyWindow extends JFrame {
 			});
 			final Box hbox = Box.createHorizontalBox();
 			hbox.add(runButton);
-
-			final StreamSink<String> happyInputStream = new StreamSink<>();
-			final EScrollingSyntaxTextArea preSourcePane = new EScrollingSyntaxTextArea(15, 80, happyInputStream,
-					preSource, new Cell<>(1));
-			Cell<Integer> preLineCount = preSourcePane.outputCell().map((s) -> TextUtils.countLines(TextUtils.ensureFinalNewline(s)));
-			DLabel preLineCountLabel = new DLabel(preLineCount.map((n) -> "preLineCount = " + n));
-			hbox.add(preLineCountLabel);
 			getContentPane().add(hbox, BorderLayout.NORTH);
-			final EScrollingSyntaxTextArea postSourcePane = new EScrollingSyntaxTextArea(15, 80, happyInputStream,
-					postSource, preLineCount.map((n) -> n + 2));
-			preSourcePane.setBorder(BorderFactory.createTitledBorder("Header and directives"));
-			postSourcePane.setBorder(BorderFactory.createTitledBorder("Grammar and footer"));
+
+			final HeaderPane headerPane = new HeaderPane(ROWS, COLS, NEVER, HEADER_SOURCE,
+					new Cell<>(STARTING_LINE_NUM));
+
+			final Cell<Integer> directivesStartingCount = headerPane.lineCountCell().map((n) -> n + STARTING_LINE_NUM);
+
+			final DirectivesPane directivesPane = new DirectivesPane(ROWS, COLS, NEVER, DIRECTIVES_SOURCE,
+					directivesStartingCount);
+
+			final Cell<Integer> grammarStartingCount = directivesStartingCount.lift(directivesPane.lineCountCell(),
+					(m, n) -> m + n + TextUtils.PERCENTS_LINES);
+
+			final GrammarPane grammarPane = new GrammarPane(ROWS, COLS, NEVER, GRAMMAR_SOURCE, grammarStartingCount);
+			final Cell<Integer> trailerStartingCount = grammarStartingCount.lift(grammarPane.lineCountCell(),
+					(m, n) -> m + n);
+			final TrailerPane trailerPane = new TrailerPane(ROWS, COLS, NEVER, TRAILER_SOURCE, trailerStartingCount);
+
 			final Box vbox = Box.createVerticalBox();
-			vbox.add(preSourcePane);
-			vbox.add(postSourcePane);
+			vbox.add(headerPane);
+			vbox.add(directivesPane);
+			vbox.add(grammarPane);
+			vbox.add(trailerPane);
 			getContentPane().add(vbox, BorderLayout.CENTER);
 
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
-			return runOutputStream.snapshot(preSourcePane.outputCell(), postSourcePane.outputCell(),
-					(u, pre, post) -> new HappySource(pre, post));
+			return runOutputStream.snapshot(headerPane.outputCell(), directivesPane.outputCell(),
+					grammarPane.outputCell(), trailerPane.outputCell(),
+					(u, header, dirs, grammar, trailer) -> new HappySource(header, dirs, grammar, trailer));
 		});
 		setVisible(true);
 	}

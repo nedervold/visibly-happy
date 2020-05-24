@@ -42,9 +42,18 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 		this(createComponent(rows, cols, inputStream, initValue), inputLineNumberCell);
 	}
 
+	public Cell<Integer> lineCountCell() {
+		return outputCell().map((str) -> TextUtils.countLines(TextUtils.ensureFinalNewline(str)));
+	}
+
 	@Override
 	public Cell<String> outputCell() {
 		return syntaxTextArea.outputCell();
+	}
+	@Override
+	public void removeNotify() {
+		lineNumberImpl.unlisten();
+		super.removeNotify();
 	}
 
 }

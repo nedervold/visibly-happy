@@ -11,11 +11,11 @@ import nz.sodium.Transaction;
 
 public class HappySourceWindow extends JFrame {
 
-	public HappySourceWindow(String title, Stream<String> inputStream) throws HeadlessException {
+	public HappySourceWindow(final String title, final Stream<String> inputStream) throws HeadlessException {
 		super(title);
-		Container cp = this.getContentPane();
+		final Container cp = getContentPane();
 		Transaction.runVoid(() -> {
-			EScrollingSyntaxTextArea src = new EScrollingSyntaxTextArea(24, 80, inputStream, "", new Cell<Integer>(1));
+			final EScrollingSyntaxTextArea src = new EScrollingSyntaxTextArea(24, 80, inputStream, "", new Cell<>(1));
 			src.syntaxTextArea.setEditable(false);
 			cp.add(src);
 			pack();
