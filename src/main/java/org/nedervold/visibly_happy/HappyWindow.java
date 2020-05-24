@@ -2,16 +2,15 @@ package org.nedervold.visibly_happy;
 
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import org.fife.ui.rtextarea.RTextScrollPane;
+import org.nedervold.nawidgets.display.DLabel;
 
+import nz.sodium.Cell;
 import nz.sodium.Stream;
 import nz.sodium.StreamSink;
 import nz.sodium.Transaction;
@@ -19,11 +18,9 @@ import nz.sodium.Unit;
 
 public class HappyWindow extends JFrame {
 
-	private final String[] initSourceLines = new String[] { "{", "module Parser where", "}", "%tokentype {()}",
-			"%token UNIT {$$}", "%%", "foo : {- empty -} {()}" };
-
-	private final String initSourceX = Arrays.asList(initSourceLines).stream().map((s) -> s + "\n")
-			.collect(Collectors.joining());
+	private static final String preSource = TextUtils.unlines(
+			new String[] { "{", "module Parser where", "}", "%tokentype {()}", "%token UNIT {$$}" });
+	private static final String postSource = TextUtils.unlines(new String[] { "foo : {- empty -} {()}" });
 
 	public final Stream<HappySource> outputStream;
 
@@ -37,19 +34,27 @@ public class HappyWindow extends JFrame {
 			});
 			final Box hbox = Box.createHorizontalBox();
 			hbox.add(runButton);
-			getContentPane().add(hbox, BorderLayout.NORTH);
 
 			final StreamSink<String> happyInputStream = new StreamSink<>();
-			final ESyntaxTextArea sourcePane = new ESyntaxTextArea(30, 80, happyInputStream,
-					"-- Type Happy code here.\n\n" + initSourceX);
-			final RTextScrollPane scroll = new RTextScrollPane(sourcePane);
-			scroll.setLineNumbersEnabled(true);
-			scroll.setBorder(BorderFactory.createTitledBorder("Happy source"));
-			getContentPane().add(scroll, BorderLayout.CENTER);
+			final EScrollingSyntaxTextArea preSourcePane = new EScrollingSyntaxTextArea(15, 80, happyInputStream,
+					preSource, new Cell<>(1));
+			Cell<Integer> preLineCount = preSourcePane.outputCell().map((s) -> TextUtils.countLines(TextUtils.ensureFinalNewline(s)));
+			DLabel preLineCountLabel = new DLabel(preLineCount.map((n) -> "preLineCount = " + n));
+			hbox.add(preLineCountLabel);
+			getContentPane().add(hbox, BorderLayout.NORTH);
+			final EScrollingSyntaxTextArea postSourcePane = new EScrollingSyntaxTextArea(15, 80, happyInputStream,
+					postSource, preLineCount.map((n) -> n + 2));
+			preSourcePane.setBorder(BorderFactory.createTitledBorder("Header and directives"));
+			postSourcePane.setBorder(BorderFactory.createTitledBorder("Grammar and footer"));
+			final Box vbox = Box.createVerticalBox();
+			vbox.add(preSourcePane);
+			vbox.add(postSourcePane);
+			getContentPane().add(vbox, BorderLayout.CENTER);
 
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
-			return runOutputStream.snapshot(sourcePane.outputCell()).map(HappySource::new);
+			return runOutputStream.snapshot(preSourcePane.outputCell(), postSourcePane.outputCell(),
+					(u, pre, post) -> new HappySource(pre, post));
 		});
 		setVisible(true);
 	}
