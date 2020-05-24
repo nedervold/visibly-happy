@@ -50,6 +50,7 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 	public Cell<String> outputCell() {
 		return syntaxTextArea.outputCell();
 	}
+
 	@Override
 	public void removeNotify() {
 		lineNumberImpl.unlisten();
