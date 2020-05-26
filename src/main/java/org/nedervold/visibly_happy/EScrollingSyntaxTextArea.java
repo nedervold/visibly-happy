@@ -17,6 +17,7 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 		@Override
 		public void setComponentValue(final Integer value) {
 			component.getGutter().setLineNumberingStartIndex(value);
+			component.repaint();
 		}
 
 	}

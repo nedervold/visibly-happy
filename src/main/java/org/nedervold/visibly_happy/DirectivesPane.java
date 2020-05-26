@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import org.nedervold.nawidgets.editor.ETextField;
 import org.nedervold.nawidgets.editor.Editor;
 import org.nedervold.visibly_happy.data.Directives;
+import org.nedervold.visibly_happy.data.ToSource;
 
 import nz.sodium.Cell;
 import nz.sodium.Stream;
@@ -54,7 +55,7 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 	}
 
 	public Cell<Integer> lineCountCell() {
-		return syntax.lineCountCell().lift(optExpectCell, (n, opt) -> n + (opt.isPresent() ? 1 : 0));
+		return outputCell().map(ToSource::toLineCount);
 	}
 
 	@Override

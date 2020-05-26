@@ -1,7 +1,5 @@
 package org.nedervold.visibly_happy.data;
 
-import org.nedervold.visibly_happy.TextUtils;
-
 public class HappySource implements ToSource {
 
 	public final Directives directives;
@@ -18,7 +16,8 @@ public class HappySource implements ToSource {
 
 	@Override
 	public String toSource() {
-		return header.toSource() + directives.toSource() + TextUtils.PERCENTS + grammar.toSource() + trailer.toSource();
+		return header.toSource() + directives.toSource() + RawSource.PERCENT_SRC.toSource() + grammar.toSource()
+				+ trailer.toSource();
 	}
 
 }

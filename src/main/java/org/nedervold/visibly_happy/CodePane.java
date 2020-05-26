@@ -8,9 +8,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 
 import org.nedervold.nawidgets.display.DBox;
+import org.nedervold.nawidgets.display.DLabel;
 import org.nedervold.nawidgets.editor.ECheckBox;
 import org.nedervold.nawidgets.editor.Editor;
 import org.nedervold.visibly_happy.data.Code;
+import org.nedervold.visibly_happy.data.ToSource;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple3;
@@ -23,13 +25,16 @@ public class CodePane extends DBox<JComponent> implements Editor<Code> {
 			final Cell<Integer> inputLineNumberCell) {
 		final ECheckBox checkBox = new ECheckBox("include code section", new Stream<Boolean>(), false);
 		final Cell<Boolean> includeCell = checkBox.outputCell();
-		final BracedPane bracedPane = new BracedPane(rows, cols, inputStream, initValue, inputLineNumberCell,
-				includeCell);
+		final BracedPane bracedPane = new BracedPane(rows, cols, inputStream, initValue, inputLineNumberCell);
 		final Box longCheckBox = Box.createHorizontalBox();
 		longCheckBox.add(checkBox);
 		longCheckBox.add(Box.createHorizontalGlue());
+		final Cell<String> labelText = inputLineNumberCell.map((n) -> "starting line = " + n);
+		final DLabel label = new DLabel(labelText);
+
 		final Cell<List<JComponent>> result = includeCell.map((b) -> {
 			final List<JComponent> list = new ArrayList<>();
+			list.add(label);
 			list.add(longCheckBox);
 			if (b) {
 				list.add(bracedPane);
@@ -55,8 +60,7 @@ public class CodePane extends DBox<JComponent> implements Editor<Code> {
 	}
 
 	public Cell<Integer> lineCountCell() {
-		final Cell<Boolean> includeCell = checkBox.outputCell();
-		return includeCell.lift(bracedPane.lineCountCell(), (b, lc) -> b ? 2 + lc : 0);
+		return outputCell().map(ToSource::toLineCount);
 	}
 
 	@Override
@@ -67,8 +71,8 @@ public class CodePane extends DBox<JComponent> implements Editor<Code> {
 
 	@Override
 	public void removeNotify() {
-		bracedPane.unlisten();
-		checkBox.removeNotify();
+		// bracedPane.unlisten();
+		// checkBox.removeNotify();
 		super.removeNotify();
 	}
 }

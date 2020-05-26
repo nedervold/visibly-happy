@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
 import org.nedervold.visibly_happy.data.HappySource;
+import org.nedervold.visibly_happy.data.RawSource;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -56,8 +57,10 @@ public class HappyWindow extends JFrame {
 			final DirectivesPane directivesPane = new DirectivesPane(ROWS, COLS, NEVER, DIRECTIVES_SOURCE,
 					directivesStartingCount);
 
-			final Cell<Integer> grammarStartingCount = directivesStartingCount.lift(directivesPane.lineCountCell(),
-					(m, n) -> m + n + TextUtils.PERCENTS_LINES);
+			final Cell<Integer> percentStartingCount = directivesStartingCount.lift(directivesPane.lineCountCell(),
+					(m, n) -> m + n);
+			final Cell<Integer> grammarStartingCount = percentStartingCount
+					.map((n) -> n + RawSource.PERCENT_SRC.toLineCount());
 
 			final GrammarPane grammarPane = new GrammarPane(ROWS, COLS, NEVER, GRAMMAR_SOURCE, grammarStartingCount);
 			final Cell<Integer> trailerStartingCount = grammarStartingCount.lift(grammarPane.lineCountCell(),
