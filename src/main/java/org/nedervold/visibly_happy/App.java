@@ -34,6 +34,9 @@ public class App {
 				sourceWindow.setVisible(true);
 				outputWindow.setVisible(true);
 			});
+
+			final TestPane testPane = new TestPane();
+			testPane.setVisible(true);
 		});
 	}
 }
