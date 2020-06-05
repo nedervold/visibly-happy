@@ -22,6 +22,10 @@ public class Lines implements ToSourceLines {
 		return newLines;
 	}
 
+	public static Lines EMPTY_LINES() {
+		return new Lines(new ArrayList<String>());
+	}
+
 	private final List<String> lines;
 
 	public Lines(final List<String> lines) {

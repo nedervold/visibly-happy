@@ -19,17 +19,19 @@ public class BracedPane extends EScrollingSyntaxTextArea {
 	}
 
 	private final LineNumbersEnabledImpl lineNumbersEnabledImpl;
+	private final Cell<Integer> outputLineNumber;
 
 	public BracedPane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,
 			final Cell<Integer> inputLineNumberCell) {
 		super(rows, cols, inputStream, initValue, inputLineNumberCell.map((n) -> n + 1));
 		final Cell<Boolean> enabledCell = super.outputCell().map((s) -> !s.isEmpty());
 		lineNumbersEnabledImpl = new LineNumbersEnabledImpl(this, enabledCell);
+		outputLineNumber = super.getOutputLineNumber().map((n) -> n + 1);
 	}
 
 	@Override
-	public Cell<String> outputCell() {
-		return super.outputCell();
+	public Cell<Integer> getOutputLineNumber() {
+		return outputLineNumber;
 	}
 
 	public void unlisten() {

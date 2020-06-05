@@ -23,6 +23,8 @@ public class App {
 
 			final HappySourceWindow sourceWindow = new HappySourceWindow("Happy source",
 					Operational.updates(happyWindow.happySourceCell.map(HappySource::toSource)));
+			sourceWindow.setLocation(800, 0);
+			sourceWindow.setVisible(true);
 			final HappyOutputWindow outputWindow = new HappyOutputWindow("Output", x._2.map((t) -> {
 				if (t.isFailure()) {
 					return Tuple.of(-1, t.getCause().toString(), "");
@@ -31,12 +33,9 @@ public class App {
 				}
 			}));
 			happyWindow.runOutputStream.listen((src) -> {
-				sourceWindow.setVisible(true);
 				outputWindow.setVisible(true);
 			});
 
-			final TestPane testPane = new TestPane();
-			testPane.setVisible(true);
 		});
 	}
 }

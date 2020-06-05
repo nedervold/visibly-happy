@@ -13,6 +13,8 @@ import nz.sodium.Cell;
 import nz.sodium.Stream;
 
 public class GrammarPane extends Box implements Editor<Grammar> {
+	private final Cell<Grammar> outputCell;
+	private final Cell<Integer> outputLineNumber;
 	public EScrollingSyntaxTextArea syntax;
 
 	public GrammarPane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,
@@ -26,15 +28,17 @@ public class GrammarPane extends Box implements Editor<Grammar> {
 		add(gramLineLabel);
 		add(syntax);
 		setBorder(BorderFactory.createTitledBorder("grammar"));
+		outputCell = syntax.outputCell().map(Grammar::new);
+		outputLineNumber = syntax.getOutputLineNumber();
 	}
 
-	public Cell<Integer> lineCountCell() {
-		return outputCell().map(ToSource::toLineCount);
+	public Cell<Integer> getOutputLineNumber() {
+		return outputLineNumber;
 	}
 
 	@Override
 	public Cell<Grammar> outputCell() {
-		return syntax.outputCell().map(Grammar::new);
+		return outputCell;
 	}
 
 }

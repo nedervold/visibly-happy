@@ -75,4 +75,6 @@ public class EScrollingSyntaxTextArea2 extends RTextScrollPane
 	public EScrollingSyntaxTextArea2 swingComponent() {
 		return this;
 	}
+
+	// TODO Where is the access to the listener?
 }

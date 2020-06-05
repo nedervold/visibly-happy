@@ -5,10 +5,13 @@ import java.awt.Container;
 import java.awt.HeadlessException;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
+import org.nedervold.nawidgets.display.DLabel;
+import org.nedervold.nawidgets.editor.ESlider;
 import org.nedervold.visibly_happy.data.HappySource;
 import org.nedervold.visibly_happy.data.RawSource;
 
@@ -49,29 +52,35 @@ public class HappyWindow extends JFrame {
 			hbox.add(runButton);
 			hbox.add(Box.createHorizontalGlue());
 
-			final HeaderPane headerPane = new HeaderPane(ROWS, COLS, NEVER, HEADER_SOURCE,
-					new Cell<>(STARTING_LINE_NUM));
+			final ESlider slider = new ESlider(BoxLayout.X_AXIS, STARTING_LINE_NUM, 20, new Stream<Integer>(), 1);
+			final HeaderPane headerPane = new HeaderPane(ROWS, COLS, NEVER, HEADER_SOURCE, slider.outputCell());
 
-			final Cell<Integer> directivesStartingCount = headerPane.lineCountCell().map((n) -> n + STARTING_LINE_NUM);
-
+			final Cell<Integer> directivesStartingCount = headerPane.getOutputLineNumber();
 			final DirectivesPane directivesPane = new DirectivesPane(ROWS, COLS, NEVER, DIRECTIVES_SOURCE,
 					directivesStartingCount);
 
-			final Cell<Integer> percentStartingCount = directivesStartingCount.lift(directivesPane.lineCountCell(),
-					(m, n) -> m + n);
+			final Cell<Integer> percentStartingCount = directivesPane.getOutputLineNumber();
+			final DLabel pc = new DLabel(percentStartingCount.map((n) -> "percentLine = " + (n + 1)));
 			final Cell<Integer> grammarStartingCount = percentStartingCount
 					.map((n) -> n + RawSource.PERCENT_SRC.toLineCount());
-
+			final DLabel gc = new DLabel(grammarStartingCount.map((n) -> "grammarStartingCount = " + n));
 			final GrammarPane grammarPane = new GrammarPane(ROWS, COLS, NEVER, GRAMMAR_SOURCE, grammarStartingCount);
-			final Cell<Integer> trailerStartingCount = grammarStartingCount.lift(grammarPane.lineCountCell(),
-					(m, n) -> m + n);
+
+			final Cell<Integer> trailerStartingCount = grammarPane.getOutputLineNumber();
+			final DLabel tc = new DLabel(trailerStartingCount.map((n) -> "trailerStartingCount = " + n));
 			final TrailerPane trailerPane = new TrailerPane(ROWS, COLS, NEVER, TRAILER_SOURCE, trailerStartingCount);
 
 			final Box paneBox = Box.createVerticalBox();
+			paneBox.add(slider);
 			paneBox.add(headerPane);
 			paneBox.add(directivesPane);
+			paneBox.add(pc);
+			paneBox.add(gc);
 			paneBox.add(grammarPane);
+			paneBox.add(tc);
 			paneBox.add(trailerPane);
+			final DLabel zc = new DLabel(trailerPane.getOutputLineNumber().map((n) -> "trailerEndingCount = " + n));
+			paneBox.add(zc);
 			contents.add(paneBox);
 			contentPane.add(hbox, BorderLayout.NORTH);
 			contentPane.add(new JScrollPane(contents), BorderLayout.CENTER);

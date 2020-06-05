@@ -27,14 +27,17 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 		return new ESyntaxTextArea(rows, cols, inputStream, initValue);
 	}
 
+	private final Cell<Integer> lineCount;
 	protected final LineNumberImpl lineNumberImpl;
-
+	private final Cell<Integer> outputLineNumber;
 	protected final ESyntaxTextArea syntaxTextArea;
 
 	private EScrollingSyntaxTextArea(final ESyntaxTextArea syntaxTextArea, final Cell<Integer> inputLineNumberCell) {
 		super(syntaxTextArea);
 		this.syntaxTextArea = syntaxTextArea;
 		lineNumberImpl = new LineNumberImpl(this, inputLineNumberCell);
+		lineCount = outputCell().map((str) -> TextUtils.countLines(TextUtils.ensureFinalNewline(str)));
+		outputLineNumber = inputLineNumberCell.lift(lineCount, (in, mid) -> in + mid);
 		setLineNumbersEnabled(true);
 	}
 
@@ -43,8 +46,12 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 		this(createComponent(rows, cols, inputStream, initValue), inputLineNumberCell);
 	}
 
+	public Cell<Integer> getOutputLineNumber() {
+		return outputLineNumber;
+	}
+
 	public Cell<Integer> lineCountCell() {
-		return outputCell().map((str) -> TextUtils.countLines(TextUtils.ensureFinalNewline(str)));
+		return lineCount;
 	}
 
 	@Override
