@@ -8,7 +8,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 
 import org.nedervold.nawidgets.display.DBox;
-import org.nedervold.nawidgets.display.DLabel;
 import org.nedervold.nawidgets.editor.ECheckBox;
 import org.nedervold.nawidgets.editor.Editor;
 import org.nedervold.visibly_happy.data.Code;
@@ -28,11 +27,9 @@ public class CodePane extends DBox<JComponent> implements Editor<Code> {
 		final Box longCheckBox = Box.createHorizontalBox();
 		longCheckBox.add(checkBox);
 		longCheckBox.add(Box.createHorizontalGlue());
-		final DLabel label = new DLabel(inputLineNumberCell.map((n) -> "codeStartingCount = " + n));
 
 		final Cell<List<JComponent>> result = includeCell.map((b) -> {
 			final List<JComponent> list = new ArrayList<>();
-			list.add(label);
 			list.add(longCheckBox);
 			if (b) {
 				list.add(bracedPane);
