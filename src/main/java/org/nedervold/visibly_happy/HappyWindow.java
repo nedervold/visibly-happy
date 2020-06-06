@@ -24,6 +24,7 @@ import nz.sodium.time.MillisecondsTimerSystem;
 public class HappyWindow extends JFrame {
 
 	private static final int COLS = 80;
+	private static final long DELAY_MILLISECS = 1 * 1000L;
 	private static final String DIRECTIVES_SOURCE = TextUtils.unlines(new String[] { "%token UNIT {$$}" });
 	private static final String GRAMMAR_SOURCE = TextUtils.unlines(new String[] { "foo : {- empty -} {()}" });
 	private static final String HEADER_SOURCE = TextUtils.unlines(new String[] { "module Parser where" });
@@ -41,7 +42,7 @@ public class HappyWindow extends JFrame {
 
 	public HappyWindow(final String title) throws HeadlessException {
 		super(title);
-		MillisecondsTimerSystem sys = new MillisecondsTimerSystem();
+		final MillisecondsTimerSystem sys = new MillisecondsTimerSystem();
 		final Tuple6<Cell<HappySource>, Stream<HappySource>, HeaderPane, DirectivesPane, GrammarPane, TrailerPane> t = Transaction
 				.run(() -> {
 					final Container contentPane = getContentPane();
@@ -77,7 +78,7 @@ public class HappyWindow extends JFrame {
 					final Cell<HappySource> happySourceCell = headerPane.outputCell().lift(directivesPane.outputCell(),
 							grammarPane.outputCell(), trailerPane.outputCell(),
 							(header, dirs, grammar, trailer) -> new HappySource(header, dirs, grammar, trailer));
-					final Stream<HappySource> runHappySourceStream = Utils.debounce(sys, 3 * 1000L,
+					final Stream<HappySource> runHappySourceStream = Utils.debounce(sys, DELAY_MILLISECS,
 							Operational.updates(happySourceCell));
 					return Tuple.of(happySourceCell, runHappySourceStream, headerPane, directivesPane, grammarPane,
 							trailerPane);

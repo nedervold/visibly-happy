@@ -47,11 +47,11 @@ public class HappyOutputWindow extends JFrame {
 			exitCodeLabel.setBorder(BorderFactory.createEmptyBorder(S, S, S, S));
 			cp.add(exitCodeLabel, BorderLayout.NORTH);
 
-			final DTextArea stderrPane = new DTextArea(20, 80, processResult.map(Tuple3::_2).hold(""));
+			final DTextArea stderrPane = new DTextArea(10, 40, processResult.map(Tuple3::_2).hold(""));
 			final JScrollPane errScroll = new JScrollPane(stderrPane);
 			errScroll.setBorder(BorderFactory.createTitledBorder("standard error"));
 
-			final DTextArea stdoutPane = new DTextArea(20, 80, processResult.map(Tuple3::_3).hold(""));
+			final DTextArea stdoutPane = new DTextArea(10, 40, processResult.map(Tuple3::_3).hold(""));
 			final JScrollPane outScroll = new JScrollPane(stdoutPane);
 			outScroll.setBorder(BorderFactory.createTitledBorder("standard output"));
 

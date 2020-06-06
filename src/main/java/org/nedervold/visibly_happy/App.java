@@ -8,7 +8,6 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.control.Try;
-import nz.sodium.Operational;
 import nz.sodium.Stream;
 
 public class App {
@@ -22,7 +21,7 @@ public class App {
 			new Thread(x._1).start();
 
 			final HappySourceWindow sourceWindow = new HappySourceWindow("Happy source",
-					Operational.updates(happyWindow.happySourceCell.map(HappySource::toSource)));
+					happyWindow.happySourceCell.map(HappySource::toSource));
 			sourceWindow.setLocation(800, 0);
 			sourceWindow.setVisible(true);
 			final HappyOutputWindow outputWindow = new HappyOutputWindow("Output", x._2.map((t) -> {
@@ -32,6 +31,7 @@ public class App {
 					return t.get();
 				}
 			}));
+			outputWindow.setLocation(800, 400);
 			outputWindow.setVisible(true);
 		});
 	}
