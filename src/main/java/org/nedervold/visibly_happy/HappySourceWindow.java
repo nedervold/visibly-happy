@@ -18,7 +18,7 @@ public class HappySourceWindow extends JFrame {
 		final Container cp = getContentPane();
 		src = Transaction.run(() -> {
 			final EScrollingSyntaxTextArea src = new EScrollingSyntaxTextArea(24, 80, inputStream, "", new Cell<>(1));
-			src.syntaxTextArea.setEditable(false);
+			src.setEditable(false);
 			cp.add(src);
 			pack();
 			return src;

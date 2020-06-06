@@ -40,9 +40,7 @@ public class CodePane extends DBox<JComponent> implements Editor<Code> {
 	}
 
 	private final BracedPane bracedPane;
-
 	private final ECheckBox checkBox;
-
 	private final Cell<Integer> outputLineNumber;
 
 	public CodePane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,

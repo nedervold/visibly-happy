@@ -21,7 +21,7 @@ public class DColorLabel extends DLabel {
 		}
 	}
 
-	protected final ColorImpl colorImpl;
+	private final ColorImpl colorImpl;
 
 	public DColorLabel(final Cell<String> inputCell, final Cell<Color> colorInputCell) {
 		super(inputCell);

@@ -58,10 +58,9 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 	private final ETextField expect;
 	private final DLabel lineNumLabel;
 	private final DLabel lineNumLabel2;
-	private Cell<Optional<Integer>> optExpectCell;
+	private final Cell<Optional<Integer>> optExpectCell;
 	private final Cell<Integer> outputLineNumber;
 	private final EScrollingSyntaxTextArea syntax;
-
 	private final ETextField tokenType;
 
 	public DirectivesPane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,

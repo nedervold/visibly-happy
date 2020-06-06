@@ -9,7 +9,6 @@ import nz.sodium.Stream;
 
 public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<String> {
 	public class LineNumberImpl extends DWidgetImpl<EScrollingSyntaxTextArea, Integer> {
-
 		public LineNumberImpl(final EScrollingSyntaxTextArea component, final Cell<Integer> inputCell) {
 			super(component, inputCell);
 		}
@@ -19,7 +18,6 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 			component.getGutter().setLineNumberingStartIndex(value);
 			component.repaint();
 		}
-
 	}
 
 	private static ESyntaxTextArea createComponent(final int rows, final int cols, final Stream<String> inputStream,
@@ -28,9 +26,9 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 	}
 
 	private final Cell<Integer> lineCount;
-	protected final LineNumberImpl lineNumberImpl;
+	private final LineNumberImpl lineNumberImpl;
 	private final Cell<Integer> outputLineNumber;
-	protected final ESyntaxTextArea syntaxTextArea;
+	private final ESyntaxTextArea syntaxTextArea;
 
 	private EScrollingSyntaxTextArea(final ESyntaxTextArea syntaxTextArea, final Cell<Integer> inputLineNumberCell) {
 		super(syntaxTextArea);
@@ -50,6 +48,10 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 		return outputLineNumber;
 	}
 
+	public boolean isEditable(final boolean editable) {
+		return syntaxTextArea.isEditable();
+	}
+
 	public Cell<Integer> lineCountCell() {
 		return lineCount;
 	}
@@ -57,6 +59,10 @@ public class EScrollingSyntaxTextArea extends RTextScrollPane implements Editor<
 	@Override
 	public Cell<String> outputCell() {
 		return syntaxTextArea.outputCell();
+	}
+
+	public void setEditable(final boolean editable) {
+		syntaxTextArea.setEditable(editable);
 	}
 
 	public void unlisten() {

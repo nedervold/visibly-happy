@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 public class TextUtils {
 
 	public static final String PERCENTS = "\n%%\n\n";
-
 	public static final int PERCENTS_LINES = countLines(ensureFinalNewline(PERCENTS));
 
 	public static int countLines(final String s) {
@@ -27,7 +26,7 @@ public class TextUtils {
 		}
 	}
 
-	protected static String unlines(final String[] lines) {
+	public static String unlines(final String[] lines) {
 		return Arrays.asList(lines).stream().map((s) -> s + "\n").collect(Collectors.joining());
 	}
 

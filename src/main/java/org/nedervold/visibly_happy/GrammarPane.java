@@ -13,7 +13,7 @@ import nz.sodium.Stream;
 public class GrammarPane extends Box implements Editor<Grammar> {
 	private final Cell<Grammar> outputCell;
 	private final Cell<Integer> outputLineNumber;
-	public EScrollingSyntaxTextArea syntax;
+	private final EScrollingSyntaxTextArea syntax;
 
 	public GrammarPane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,
 			final Cell<Integer> inputLineNumberCell) {

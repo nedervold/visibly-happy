@@ -22,9 +22,7 @@ import nz.sodium.Transaction;
 public class HappyOutputWindow extends JFrame {
 
 	private final DColorLabel exitCodeLabel;
-
 	private final DTextArea stderrPane;
-
 	private final DTextArea stdoutPane;
 
 	public HappyOutputWindow(final String title, final Stream<Tuple3<Integer, String, String>> processResult)
