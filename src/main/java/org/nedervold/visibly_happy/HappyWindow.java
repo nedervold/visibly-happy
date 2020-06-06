@@ -5,20 +5,21 @@ import java.awt.Container;
 import java.awt.HeadlessException;
 
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
+import org.nedervold.nawidgets.Utils;
 import org.nedervold.visibly_happy.data.HappySource;
 import org.nedervold.visibly_happy.data.RawSource;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple6;
 import nz.sodium.Cell;
+import nz.sodium.Operational;
 import nz.sodium.Stream;
 import nz.sodium.StreamSink;
 import nz.sodium.Transaction;
-import nz.sodium.Unit;
+import nz.sodium.time.MillisecondsTimerSystem;
 
 public class HappyWindow extends JFrame {
 
@@ -40,19 +41,11 @@ public class HappyWindow extends JFrame {
 
 	public HappyWindow(final String title) throws HeadlessException {
 		super(title);
+		MillisecondsTimerSystem sys = new MillisecondsTimerSystem();
 		final Tuple6<Cell<HappySource>, Stream<HappySource>, HeaderPane, DirectivesPane, GrammarPane, TrailerPane> t = Transaction
 				.run(() -> {
 					final Container contentPane = getContentPane();
 					final Box contents = Box.createVerticalBox();
-
-					final JButton runButton = new JButton("Run…");
-					final StreamSink<Unit> runOutputStream = new StreamSink<>();
-					runButton.addActionListener((e) -> {
-						runOutputStream.send(Unit.UNIT);
-					});
-					final Box hbox = Box.createHorizontalBox();
-					hbox.add(runButton);
-					hbox.add(Box.createHorizontalGlue());
 
 					final HeaderPane headerPane = new HeaderPane(ROWS, COLS, NEVER, HEADER_SOURCE,
 							new Cell<>(STARTING_LINE_NUM));
@@ -77,7 +70,6 @@ public class HappyWindow extends JFrame {
 					paneBox.add(grammarPane);
 					paneBox.add(trailerPane);
 					contents.add(paneBox);
-					contentPane.add(hbox, BorderLayout.NORTH);
 					contentPane.add(new JScrollPane(contents), BorderLayout.CENTER);
 
 					setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -85,8 +77,8 @@ public class HappyWindow extends JFrame {
 					final Cell<HappySource> happySourceCell = headerPane.outputCell().lift(directivesPane.outputCell(),
 							grammarPane.outputCell(), trailerPane.outputCell(),
 							(header, dirs, grammar, trailer) -> new HappySource(header, dirs, grammar, trailer));
-					final Stream<HappySource> runHappySourceStream = runOutputStream.snapshot(happySourceCell,
-							(u, happySource) -> happySource);
+					final Stream<HappySource> runHappySourceStream = Utils.debounce(sys, 3 * 1000L,
+							Operational.updates(happySourceCell));
 					return Tuple.of(happySourceCell, runHappySourceStream, headerPane, directivesPane, grammarPane,
 							trailerPane);
 				});

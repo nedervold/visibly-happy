@@ -32,10 +32,7 @@ public class App {
 					return t.get();
 				}
 			}));
-			happyWindow.runOutputStream.listen((src) -> {
-				outputWindow.setVisible(true);
-			});
-
+			outputWindow.setVisible(true);
 		});
 	}
 }
