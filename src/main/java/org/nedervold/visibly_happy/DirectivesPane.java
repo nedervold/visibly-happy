@@ -18,17 +18,57 @@ import nz.sodium.Stream;
 
 public class DirectivesPane extends Box implements Editor<Directives> {
 
+	// static class NumberedLine extends Box {
+	//
+	// private final DLabel lineNumLabel;
+	//
+	// private final Cell<Integer> outputLineNumber;
+	//
+	// public NumberedLine(final Cell<Integer> inputLineNumber, final Cell<Boolean>
+	// isPresent) {
+	// super(BoxLayout.X_AXIS);
+	// outputLineNumber = Cell.switchC(isPresent.map((pres) -> {
+	// if (pres) {
+	// return inputLineNumber.map((n) -> n + 1);
+	// } else {
+	// return inputLineNumber;
+	// }
+	// }));
+	// final Cell<String> labelStr = inputLineNumber.lift(isPresent, (n, pres) -> {
+	// if (pres) {
+	// return String.format("%3d", n);
+	// } else {
+	// return String.format("%3s", "");
+	// }
+	// });
+	// lineNumLabel = new DLabel(labelStr);
+	// add(lineNumLabel);
+	// add(Box.createHorizontalStrut(5));
+	// }
+	//
+	// public Cell<Integer> getOutputLineNumber() {
+	// return outputLineNumber;
+	// }
+	//
+	// public void unlisten() {
+	// lineNumLabel.unlisten();
+	// }
+	// }
+
 	private final ETextField expect;
+	private final DLabel lineNumLabel;
+	private final DLabel lineNumLabel2;
 	private Cell<Optional<Integer>> optExpectCell;
 	private final Cell<Integer> outputLineNumber;
-	final EScrollingSyntaxTextArea syntax;
+	private final EScrollingSyntaxTextArea syntax;
+
 	private final ETextField tokenType;
 
 	public DirectivesPane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,
 			final Cell<Integer> inputLineNumberCell) {
 		super(BoxLayout.Y_AXIS);
 
-		final DLabel lineNumLabel = new DLabel(inputLineNumberCell.map((final Integer n) -> n.toString()));
+		lineNumLabel = new DLabel(inputLineNumberCell.map((final Integer n) -> String.format("%3d", n)));
 		final JLabel tokenTypeLabel = new JLabel("%tokentype (a Haskell type; required)");
 		tokenType = new ETextField(new Stream<String>(), "()", 20);
 		final Box tokenTypeHBox = Box.createHorizontalBox();
@@ -38,6 +78,7 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 		tokenTypeHBox.add(tokenType);
 		add(tokenTypeHBox);
 
+		final Cell<Integer> expectLineNumber = inputLineNumberCell.map((n) -> n + 1);
 		final JLabel expectLabel = new JLabel("%expect (int; optional)");
 		expect = new ETextField(new Stream<String>(), "", 20);
 		optExpectCell = expect.outputCell().map((s) -> {
@@ -48,7 +89,17 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 				return Optional.empty();
 			}
 		});
+		lineNumLabel2 = new DLabel(expectLineNumber.lift(optExpectCell, (n, opt) -> {
+			if (opt.isPresent()) {
+				return String.format("%3d", n);
+			} else {
+				return String.format("%3s", "");
+			}
+		}));
+
 		final Box expectHBox = Box.createHorizontalBox();
+		expectHBox.add(lineNumLabel2);
+		expectHBox.add(Box.createHorizontalStrut(5));
 		expectHBox.add(expectLabel);
 		expectHBox.add(expect);
 		add(expectHBox);
@@ -60,6 +111,8 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 		final Gutter gutter = syntax.getGutter();
 		lineNumLabel.setFont(gutter.getLineNumberFont());
 		lineNumLabel.setForeground(gutter.getLineNumberColor());
+		lineNumLabel2.setFont(gutter.getLineNumberFont());
+		lineNumLabel2.setForeground(gutter.getLineNumberColor());
 
 		outputLineNumber = syntax.getOutputLineNumber();
 		add(syntax);
@@ -77,7 +130,10 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 	}
 
 	public void unlisten() {
-		// TODO What goes here?
+		lineNumLabel.unlisten();
+		lineNumLabel2.unlisten();
+		expect.unlisten();
+		syntax.unlisten();
 	}
 
 }

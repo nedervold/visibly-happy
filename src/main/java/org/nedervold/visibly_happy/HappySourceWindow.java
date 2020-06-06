@@ -11,16 +11,23 @@ import nz.sodium.Transaction;
 
 public class HappySourceWindow extends JFrame {
 
+	private final EScrollingSyntaxTextArea src;
+
 	public HappySourceWindow(final String title, final Stream<String> inputStream) throws HeadlessException {
 		super(title);
 		final Container cp = getContentPane();
-		Transaction.runVoid(() -> {
+		src = Transaction.run(() -> {
 			final EScrollingSyntaxTextArea src = new EScrollingSyntaxTextArea(24, 80, inputStream, "", new Cell<>(1));
 			src.syntaxTextArea.setEditable(false);
 			cp.add(src);
 			pack();
+			return src;
 		});
 	}
 
-	// TODO unlisten
+	@Override
+	public void removeNotify() {
+		src.unlisten();
+		super.removeNotify();
+	}
 }

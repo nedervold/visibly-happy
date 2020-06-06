@@ -37,5 +37,6 @@ public class BracedPane extends EScrollingSyntaxTextArea {
 	@Override
 	public void unlisten() {
 		lineNumbersEnabledImpl.unlisten();
+		super.unlisten();
 	}
 }
