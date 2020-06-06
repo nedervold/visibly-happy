@@ -71,9 +71,9 @@ public class CodePane extends DBox<JComponent> implements Editor<Code> {
 	}
 
 	@Override
-	public void removeNotify() {
-		// bracedPane.unlisten();
-		// checkBox.removeNotify();
-		super.removeNotify();
+	public void unlisten() {
+		bracedPane.unlisten();
+		checkBox.unlisten();
+		super.unlisten();
 	}
 }

@@ -58,4 +58,5 @@ public class HappyOutputWindow extends JFrame {
 		});
 	}
 
+	// TODO unlisten
 }

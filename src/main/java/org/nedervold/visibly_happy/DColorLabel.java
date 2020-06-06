@@ -29,8 +29,8 @@ public class DColorLabel extends DLabel {
 	}
 
 	@Override
-	public void removeNotify() {
+	public void unlisten() {
 		colorImpl.unlisten();
-		super.removeNotify();
+		super.unlisten();
 	}
 }

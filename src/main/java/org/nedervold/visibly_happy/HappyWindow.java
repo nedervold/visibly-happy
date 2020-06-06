@@ -50,7 +50,7 @@ public class HappyWindow extends JFrame {
 			hbox.add(Box.createHorizontalGlue());
 
 			final HeaderPane headerPane = new HeaderPane(ROWS, COLS, NEVER, HEADER_SOURCE,
-					new Cell<Integer>(STARTING_LINE_NUM));
+					new Cell<>(STARTING_LINE_NUM));
 
 			final Cell<Integer> directivesStartingCount = headerPane.getOutputLineNumber();
 			final DirectivesPane directivesPane = new DirectivesPane(ROWS, COLS, NEVER, DIRECTIVES_SOURCE,
@@ -87,4 +87,5 @@ public class HappyWindow extends JFrame {
 		setVisible(true);
 	}
 
+	// TODO Unlisten
 }

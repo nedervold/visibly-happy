@@ -7,6 +7,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 
+import org.fife.ui.rtextarea.Gutter;
 import org.nedervold.nawidgets.display.DLabel;
 import org.nedervold.nawidgets.editor.ETextField;
 import org.nedervold.nawidgets.editor.Editor;
@@ -55,6 +56,11 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 		final Cell<Integer> inLineNoForTextArea = inputLineNumberCell.lift(optExpectCell,
 				(n, opt) -> n + (opt.isPresent() ? 2 : 1));
 		syntax = new EScrollingSyntaxTextArea(rows, cols, inputStream, initValue, inLineNoForTextArea);
+
+		final Gutter gutter = syntax.getGutter();
+		lineNumLabel.setFont(gutter.getLineNumberFont());
+		lineNumLabel.setForeground(gutter.getLineNumberColor());
+
 		outputLineNumber = syntax.getOutputLineNumber();
 		add(syntax);
 		setBorder(BorderFactory.createTitledBorder("directives"));
@@ -68,6 +74,10 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 	public Cell<Directives> outputCell() {
 		return tokenType.outputCell().lift(optExpectCell, syntax.outputCell(), Directives::new);
 
+	}
+
+	public void unlisten() {
+		// TODO What goes here?
 	}
 
 }
