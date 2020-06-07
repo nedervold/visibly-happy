@@ -6,7 +6,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 
-import org.nedervold.nawidgets.display.DLabel;
 import org.nedervold.nawidgets.editor.ETextField;
 
 import nz.sodium.Cell;
@@ -14,7 +13,7 @@ import nz.sodium.Stream;
 
 public class ExpectDirective extends Box implements Style {
 	private final ETextField expect;
-	private final DLabel lineNumLabel;
+	private final LineNumLabel lineNumLabel;
 	private final Cell<Optional<Integer>> optExpectCell;
 	private final Cell<Integer> outputLineNumber;
 
@@ -42,14 +41,14 @@ public class ExpectDirective extends Box implements Style {
 				return Optional.empty();
 			}
 		});
-		lineNumLabel = new DLabel(inputLineNumberCell.lift(optExpectCell, (n, opt) -> {
+		final Cell<Optional<Integer>> optLineNumber = inputLineNumberCell.lift(optExpectCell, (n, opt) -> {
 			if (opt.isPresent()) {
-				return String.format("%3d", n);
+				return Optional.of(n);
 			} else {
-				return String.format("%3s", "");
+				return Optional.empty();
 			}
-		}));
-		matchGutter();
+		});
+		lineNumLabel = new LineNumLabel(optLineNumber);
 		outputLineNumber = inputLineNumberCell.lift(optExpectCell, (n, opt) -> n + (opt.isPresent() ? 1 : 0));
 
 		this.add(lineNumLabel);
@@ -60,11 +59,6 @@ public class ExpectDirective extends Box implements Style {
 
 	public Cell<Integer> getOutputLineNumber() {
 		return outputLineNumber;
-	}
-
-	private void matchGutter() {
-		lineNumLabel.setFont(GUTTER.getLineNumberFont());
-		lineNumLabel.setForeground(GUTTER.getLineNumberColor());
 	}
 
 	public Cell<Optional<Integer>> outputCell() {

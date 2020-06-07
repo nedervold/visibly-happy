@@ -2,44 +2,39 @@ package org.nedervold.visibly_happy;
 
 import java.awt.BorderLayout;
 import java.util.Arrays;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import org.nedervold.nawidgets.display.DBox;
-import org.nedervold.nawidgets.display.DLabel;
 import org.nedervold.nawidgets.editor.EComboBox;
 import org.nedervold.nawidgets.editor.ETextField;
 
 import nz.sodium.Cell;
 import nz.sodium.Stream;
 
-public class PrecedenceDirectives extends JPanel implements Style {
+public class PrecedenceDirectives extends JPanel {
 	public static class PrecedenceDirective extends Box {
-		private final DLabel lineNumLabel;
+		private final LineNumLabel lineNumLabel;
 
 		public PrecedenceDirective(final String str) {
 			super(BoxLayout.X_AXIS);
-			lineNumLabel = new DLabel(new Cell<>(String.format("%3s", "nnn")));
-
-			matchGutter();
+			lineNumLabel = new LineNumLabel(new Cell<>(Optional.of(2020)));
 
 			add(lineNumLabel);
 			add(Box.createHorizontalStrut(5));
+			final SignButton button = new SignButton("-");
+			add(button);
 			add(new EComboBox<>(new Stream<>(), new String[] { "%left", "%right", "%nonassoc" }));
 			add(new ETextField(new Stream<>(), str, 20));
 			add(Box.createHorizontalGlue());
 		}
 
-		private void matchGutter() {
-			lineNumLabel.setFont(GUTTER.getLineNumberFont());
-			lineNumLabel.setForeground(GUTTER.getLineNumberColor());
-		}
 	}
 
 	public static class PrecedenceDirectiveList extends DBox<PrecedenceDirective> {
@@ -69,8 +64,7 @@ public class PrecedenceDirectives extends JPanel implements Style {
 		add(scroll, BorderLayout.CENTER);
 
 		final Box hbox = Box.createHorizontalBox();
-		hbox.add(new JButton("+"));
-		hbox.add(new JButton("-"));
+		hbox.add(new SignButton("+"));
 		hbox.add(Box.createHorizontalGlue());
 		add(hbox, BorderLayout.SOUTH);
 		setBorder(BorderFactory.createTitledBorder("precedences"));

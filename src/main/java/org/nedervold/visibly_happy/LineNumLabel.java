@@ -18,10 +18,6 @@ public class LineNumLabel extends DLabel implements Style {
 
 	public LineNumLabel(final Cell<Optional<Integer>> inputCell) {
 		super(inputCell.map(LineNumLabel::f));
-		matchGutter();
-	}
-
-	private void matchGutter() {
 		setFont(GUTTER.getLineNumberFont());
 		setForeground(GUTTER.getLineNumberColor());
 	}
