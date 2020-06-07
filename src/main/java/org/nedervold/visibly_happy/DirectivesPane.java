@@ -4,7 +4,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
-import org.fife.ui.rtextarea.Gutter;
 import org.nedervold.nawidgets.editor.Editor;
 import org.nedervold.visibly_happy.data.Directives;
 
@@ -31,7 +30,7 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 	 *
 	 * %token <name> { <Haskell pattern> }
 	 *
-	 * <name> { <Haskell pattern> }
+	 *        <name> { <Haskell pattern> }
 	 *
 	 * %name <Haskell identifier> [ <nonterminal> ]
 	 *
@@ -41,18 +40,19 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 	 *
 	 * %lexer { <lexer> } { <eof> }
 	 *
+	 * %error { <identifier> }
+	 *
 	 * %left <name> ...
 	 *
 	 * %right <name> ...
 	 *
 	 * %nonassoc <name> ...
 	 *
-	 * %error { <identifier> }
-	 *
 	 * %attribute <Haskell identifier> { <valid Haskell type> }
 	 */
 	private final ExpectDirective expectDirective;
 	private final Cell<Integer> outputLineNumber;
+	private final PrecedenceDirectives precedenceDirectives;
 	private final DirectivesTextArea syntax;
 	private final TokentypeDirective tokentypeDirective;
 
@@ -60,17 +60,15 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 		super(BoxLayout.Y_AXIS);
 
 		tokentypeDirective = new TokentypeDirective(inputLineNumberCell);
-		expectDirective = new ExpectDirective(tokentypeDirective.getOutputLineNumber());
-		syntax = new DirectivesTextArea(expectDirective.getOutputLineNumber());
-		outputLineNumber = syntax.getOutputLineNumber();
+		syntax = new DirectivesTextArea(tokentypeDirective.getOutputLineNumber());
+		precedenceDirectives = new PrecedenceDirectives(syntax.getOutputLineNumber());
+		expectDirective = new ExpectDirective(precedenceDirectives.getOutputLineNumber());
+		outputLineNumber = expectDirective.getOutputLineNumber();
 
 		add(tokentypeDirective);
-		add(expectDirective);
 		add(syntax);
-
-		final Gutter gutter = syntax.getGutter();
-		tokentypeDirective.matchGutter(gutter);
-		expectDirective.matchGutter(gutter);
+		add(precedenceDirectives);
+		add(expectDirective);
 
 		setBorder(BorderFactory.createTitledBorder("directives"));
 	}
@@ -81,7 +79,7 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 
 	@Override
 	public Cell<Directives> outputCell() {
-		return tokentypeDirective.outputCell().lift(expectDirective.outputCell(), syntax.outputCell(), Directives::new);
+		return tokentypeDirective.outputCell().lift(syntax.outputCell(), expectDirective.outputCell(), Directives::new);
 
 	}
 

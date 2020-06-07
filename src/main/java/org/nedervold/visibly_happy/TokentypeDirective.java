@@ -4,14 +4,13 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 
-import org.fife.ui.rtextarea.Gutter;
 import org.nedervold.nawidgets.display.DLabel;
 import org.nedervold.nawidgets.editor.ETextField;
 
 import nz.sodium.Cell;
 import nz.sodium.Stream;
 
-public class TokentypeDirective extends Box {
+public class TokentypeDirective extends Box implements Style {
 	private final DLabel lineNumLabel;
 	private final Cell<Integer> outputLineNumber;
 	private final ETextField tokentypeTextField;
@@ -23,6 +22,7 @@ public class TokentypeDirective extends Box {
 		tokentypeTextField = new ETextField(new Stream<String>(), "()", 20);
 		outputLineNumber = inputLineNumberCell.map((n) -> n + 1);
 
+		matchGutter();
 		add(lineNumLabel);
 		add(Box.createHorizontalStrut(5));
 		add(tokenTypeLabel);
@@ -33,9 +33,9 @@ public class TokentypeDirective extends Box {
 		return outputLineNumber;
 	}
 
-	public void matchGutter(final Gutter gutter) {
-		lineNumLabel.setFont(gutter.getLineNumberFont());
-		lineNumLabel.setForeground(gutter.getLineNumberColor());
+	private void matchGutter() {
+		lineNumLabel.setFont(GUTTER.getLineNumberFont());
+		lineNumLabel.setForeground(GUTTER.getLineNumberColor());
 	}
 
 	public Cell<String> outputCell() {

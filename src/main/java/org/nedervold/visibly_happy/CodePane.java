@@ -40,7 +40,7 @@ public class CodePane extends DBox<JComponent> implements Editor<Code>, Style {
 	}
 
 	private final BracedPane bracedPane;
-	private final ECheckBox checkBox;
+	private final ECheckBox checkBox; // TODO Make this a ToggleButton with disclosure triangles?
 	private final Cell<Integer> outputLineNumber;
 
 	public CodePane(final Stream<String> inputStream, final String initValue, final Cell<Integer> inputLineNumberCell) {

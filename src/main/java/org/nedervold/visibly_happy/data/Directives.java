@@ -8,11 +8,11 @@ public class Directives implements ToSource {
 	private final String source;
 	private final String tokenType;
 
-	public Directives(final String tokenType, final Optional<Integer> expect, final String source) {
+	public Directives(final String tokenType, final String source, final Optional<Integer> expect) {
 		super();
 		this.tokenType = tokenType;
-		this.expect = expect;
 		this.source = source;
+		this.expect = expect;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class Directives implements ToSource {
 		} else {
 			exp = "";
 		}
-		return "%tokentype {" + tokenType + "}\n" + exp + source;
+		return "%tokentype {" + tokenType + "}\n" + source + exp;
 	}
 
 }
