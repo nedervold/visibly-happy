@@ -4,9 +4,9 @@ import java.util.Optional;
 
 public class Directives implements ToSource {
 
-	protected final Optional<Integer> expect;
-	protected final String source;
-	protected final String tokenType;
+	private final Optional<Integer> expect;
+	private final String source;
+	private final String tokenType;
 
 	public Directives(final String tokenType, final Optional<Integer> expect, final String source) {
 		super();

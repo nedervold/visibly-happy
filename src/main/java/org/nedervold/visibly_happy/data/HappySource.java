@@ -2,10 +2,10 @@ package org.nedervold.visibly_happy.data;
 
 public class HappySource implements ToSource {
 
-	public final Directives directives;
-	public final RawSource grammar;
-	public final Code header;
-	public final Code trailer;
+	private final Directives directives;
+	private final RawSource grammar;
+	private final Code header;
+	private final Code trailer;
 
 	public HappySource(final Code header, final Directives directives, final RawSource grammar, final Code trailer) {
 		this.header = header;

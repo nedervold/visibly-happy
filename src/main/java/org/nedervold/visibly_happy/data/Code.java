@@ -4,8 +4,8 @@ import org.nedervold.visibly_happy.TextUtils;
 
 public class Code extends RawSource {
 
-	public Code(final String sourcs) {
-		super(sourcs);
+	public Code(final String source) {
+		super(source);
 	}
 
 	@Override

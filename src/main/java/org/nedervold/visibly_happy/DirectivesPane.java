@@ -13,17 +13,22 @@ import nz.sodium.Stream;
 
 public class DirectivesPane extends Box implements Editor<Directives> {
 
+	/**
+	 * @author nedervold
+	 *
+	 *         A temporary placeholder until I can define all the directives.
+	 */
 	public static class DirectivesTextArea extends EScrollingSyntaxTextArea implements Style {
+		private static final String DIRECTIVES_SOURCE = TextUtils.unlines(new String[] { "%token UNIT {$$}" });
+
 		public DirectivesTextArea(final Cell<Integer> inputLineNumberCell) {
 			super(ROWS, COLS, new Stream<>(), DIRECTIVES_SOURCE, inputLineNumberCell);
 		}
 	}
 
-	private static final String DIRECTIVES_SOURCE = TextUtils.unlines(new String[] { "%token UNIT {$$}" });
 	private final ExpectDirective expectDirective;
 	private final Cell<Integer> outputLineNumber;
-	private final EScrollingSyntaxTextArea syntax;
-
+	private final DirectivesTextArea syntax;
 	private final TokentypeDirective tokentypeDirective;
 
 	public DirectivesPane(final Cell<Integer> inputLineNumberCell) {
