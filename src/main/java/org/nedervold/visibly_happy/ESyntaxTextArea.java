@@ -19,6 +19,7 @@ public class ESyntaxTextArea extends RSyntaxTextArea implements Editor<String> {
 
 	public ESyntaxTextArea(final int rows, final int cols, final Stream<String> inputStream, final String initValue) {
 		super(initValue, rows, cols);
+		setHighlightCurrentLine(false);
 		impl = new Impl(this, inputStream, initValue);
 	}
 

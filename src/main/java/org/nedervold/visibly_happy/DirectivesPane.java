@@ -26,6 +26,31 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 		}
 	}
 
+	/*
+	 * Other directives:
+	 *
+	 * %token <name> { <Haskell pattern> }
+	 *
+	 * <name> { <Haskell pattern> }
+	 *
+	 * %name <Haskell identifier> [ <nonterminal> ]
+	 *
+	 * %partial <Haskell identifier> [ <nonterminal> ]
+	 *
+	 * %monad { <type> } { <then> } { <return> }
+	 *
+	 * %lexer { <lexer> } { <eof> }
+	 *
+	 * %left <name> ...
+	 *
+	 * %right <name> ...
+	 *
+	 * %nonassoc <name> ...
+	 *
+	 * %error { <identifier> }
+	 *
+	 * %attribute <Haskell identifier> { <valid Haskell type> }
+	 */
 	private final ExpectDirective expectDirective;
 	private final Cell<Integer> outputLineNumber;
 	private final DirectivesTextArea syntax;
