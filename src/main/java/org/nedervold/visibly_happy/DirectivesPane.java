@@ -16,7 +16,7 @@ import org.nedervold.visibly_happy.data.Directives;
 import nz.sodium.Cell;
 import nz.sodium.Stream;
 
-public class DirectivesPane extends Box implements Editor<Directives> {
+public class DirectivesPane extends Box implements Editor<Directives>, Style {
 
 	// static class NumberedLine extends Box {
 	//
@@ -55,6 +55,7 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 	// }
 	// }
 
+	private static final String DIRECTIVES_SOURCE = TextUtils.unlines(new String[] { "%token UNIT {$$}" });
 	private final ETextField expect;
 	private final DLabel lineNumLabel;
 	private final DLabel lineNumLabel2;
@@ -63,10 +64,8 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 	private final EScrollingSyntaxTextArea syntax;
 	private final ETextField tokenType;
 
-	public DirectivesPane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,
-			final Cell<Integer> inputLineNumberCell) {
+	public DirectivesPane(final Cell<Integer> inputLineNumberCell) {
 		super(BoxLayout.Y_AXIS);
-
 		lineNumLabel = new DLabel(inputLineNumberCell.map((final Integer n) -> String.format("%3d", n)));
 		final JLabel tokenTypeLabel = new JLabel("%tokentype (a Haskell type; required)");
 		tokenType = new ETextField(new Stream<String>(), "()", 20);
@@ -105,7 +104,7 @@ public class DirectivesPane extends Box implements Editor<Directives> {
 
 		final Cell<Integer> inLineNoForTextArea = inputLineNumberCell.lift(optExpectCell,
 				(n, opt) -> n + (opt.isPresent() ? 2 : 1));
-		syntax = new EScrollingSyntaxTextArea(rows, cols, inputStream, initValue, inLineNoForTextArea);
+		syntax = new EScrollingSyntaxTextArea(ROWS, COLS, new Stream<>(), DIRECTIVES_SOURCE, inLineNoForTextArea);
 
 		final Gutter gutter = syntax.getGutter();
 		lineNumLabel.setFont(gutter.getLineNumberFont());

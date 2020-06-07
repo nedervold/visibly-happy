@@ -17,7 +17,7 @@ import io.vavr.Tuple4;
 import nz.sodium.Cell;
 import nz.sodium.Stream;
 
-public class CodePane extends DBox<JComponent> implements Editor<Code> {
+public class CodePane extends DBox<JComponent> implements Editor<Code>, Style {
 	private static Tuple4<Cell<Integer>, ECheckBox, BracedPane, Cell<List<JComponent>>> createComponents(final int rows,
 			final int cols, final Stream<String> inputStream, final String initValue,
 			final Cell<Integer> inputLineNumberCell) {
@@ -43,9 +43,8 @@ public class CodePane extends DBox<JComponent> implements Editor<Code> {
 	private final ECheckBox checkBox;
 	private final Cell<Integer> outputLineNumber;
 
-	public CodePane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,
-			final Cell<Integer> inputLineNumberCell) {
-		this(createComponents(rows, cols, inputStream, initValue, inputLineNumberCell));
+	public CodePane(final Stream<String> inputStream, final String initValue, final Cell<Integer> inputLineNumberCell) {
+		this(createComponents(ROWS, COLS, inputStream, initValue, inputLineNumberCell));
 	}
 
 	private CodePane(final Tuple4<Cell<Integer>, ECheckBox, BracedPane, Cell<List<JComponent>>> t) {

@@ -7,9 +7,10 @@ import nz.sodium.Stream;
 
 public class TrailerPane extends CodePane {
 
-	public TrailerPane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,
-			final Cell<Integer> inputLineNumberCell) {
-		super(rows, cols, inputStream, initValue, inputLineNumberCell);
+	private final static String TRAILER_SOURCE = "";
+
+	public TrailerPane(final Cell<Integer> inputLineNumberCell) {
+		super(new Stream<>(), TRAILER_SOURCE, inputLineNumberCell);
 		setBorder(BorderFactory.createTitledBorder("trailer"));
 	}
 

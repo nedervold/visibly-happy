@@ -10,15 +10,15 @@ import org.nedervold.visibly_happy.data.Grammar;
 import nz.sodium.Cell;
 import nz.sodium.Stream;
 
-public class GrammarPane extends Box implements Editor<Grammar> {
+public class GrammarPane extends Box implements Editor<Grammar>, Style {
+	private static final String GRAMMAR_SOURCE = TextUtils.unlines(new String[] { "foo : {- empty -} {()}" });
 	private final Cell<Grammar> outputCell;
 	private final Cell<Integer> outputLineNumber;
 	private final EScrollingSyntaxTextArea syntax;
 
-	public GrammarPane(final int rows, final int cols, final Stream<String> inputStream, final String initValue,
-			final Cell<Integer> inputLineNumberCell) {
+	public GrammarPane(final Cell<Integer> inputLineNumberCell) {
 		super(BoxLayout.Y_AXIS);
-		syntax = new EScrollingSyntaxTextArea(rows, cols, inputStream, initValue, inputLineNumberCell);
+		syntax = new EScrollingSyntaxTextArea(ROWS, COLS, new Stream<>(), GRAMMAR_SOURCE, inputLineNumberCell);
 		add(syntax);
 		setBorder(BorderFactory.createTitledBorder("grammar"));
 		outputCell = syntax.outputCell().map(Grammar::new);

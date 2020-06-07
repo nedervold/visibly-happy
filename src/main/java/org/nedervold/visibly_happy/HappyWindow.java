@@ -17,27 +17,31 @@ import io.vavr.Tuple6;
 import nz.sodium.Cell;
 import nz.sodium.Operational;
 import nz.sodium.Stream;
-import nz.sodium.StreamSink;
 import nz.sodium.Transaction;
 import nz.sodium.time.MillisecondsTimerSystem;
 
-public class HappyWindow extends JFrame {
+public class HappyWindow extends JFrame implements Style {
 
-	private static final int COLS = 80;
+	public static class PercentBox {
+		private final Cell<Integer> outputLineNumber;
+
+		public PercentBox(final Cell<Integer> inputLineNumberCell) {
+			outputLineNumber = inputLineNumberCell.map((n) -> n + RawSource.PERCENT_SRC.toLineCount());
+		}
+
+		public Cell<Integer> getOutputLineNumber() {
+			return outputLineNumber;
+		}
+	}
+
 	private static final long DELAY_MILLISECS = 1 * 1000L;
-	private static final String DIRECTIVES_SOURCE = TextUtils.unlines(new String[] { "%token UNIT {$$}" });
-	private static final String GRAMMAR_SOURCE = TextUtils.unlines(new String[] { "foo : {- empty -} {()}" });
-	private static final String HEADER_SOURCE = TextUtils.unlines(new String[] { "module Parser where" });
-	private static final StreamSink<String> NEVER = new StreamSink<>();
-	private static final int ROWS = 12;
 	private static final int STARTING_LINE_NUM = 1;
-
-	private static final String TRAILER_SOURCE = "";
 	private final DirectivesPane directivesPane;
 	private final GrammarPane grammarPane;
 	public final Cell<HappySource> happySourceCell;
 	private final HeaderPane headerPane;
 	public final Stream<HappySource> runOutputStream;
+
 	private final TrailerPane trailerPane;
 
 	public HappyWindow(final String title) throws HeadlessException {
@@ -45,33 +49,22 @@ public class HappyWindow extends JFrame {
 		final MillisecondsTimerSystem sys = new MillisecondsTimerSystem();
 		final Tuple6<Cell<HappySource>, Stream<HappySource>, HeaderPane, DirectivesPane, GrammarPane, TrailerPane> t = Transaction
 				.run(() -> {
+					final Cell<Integer> inputLineNumberCell = new Cell<>(STARTING_LINE_NUM);
+					final HeaderPane headerPane = new HeaderPane(inputLineNumberCell);
+					final DirectivesPane directivesPane = new DirectivesPane(headerPane.getOutputLineNumber());
+					final PercentBox percentBox = new PercentBox(directivesPane.getOutputLineNumber());
+					final GrammarPane grammarPane = new GrammarPane(percentBox.getOutputLineNumber());
+					final TrailerPane trailerPane = new TrailerPane(grammarPane.getOutputLineNumber());
+
 					final Container contentPane = getContentPane();
-					final Box contents = Box.createVerticalBox();
-
-					final HeaderPane headerPane = new HeaderPane(ROWS, COLS, NEVER, HEADER_SOURCE,
-							new Cell<>(STARTING_LINE_NUM));
-
-					final Cell<Integer> directivesStartingCount = headerPane.getOutputLineNumber();
-					final DirectivesPane directivesPane = new DirectivesPane(ROWS, COLS, NEVER, DIRECTIVES_SOURCE,
-							directivesStartingCount);
-
-					final Cell<Integer> percentStartingCount = directivesPane.getOutputLineNumber();
-					final Cell<Integer> grammarStartingCount = percentStartingCount
-							.map((n) -> n + RawSource.PERCENT_SRC.toLineCount());
-					final GrammarPane grammarPane = new GrammarPane(ROWS, COLS, NEVER, GRAMMAR_SOURCE,
-							grammarStartingCount);
-
-					final Cell<Integer> trailerStartingCount = grammarPane.getOutputLineNumber();
-					final TrailerPane trailerPane = new TrailerPane(ROWS, COLS, NEVER, TRAILER_SOURCE,
-							trailerStartingCount);
-
 					final Box paneBox = Box.createVerticalBox();
 					paneBox.add(headerPane);
 					paneBox.add(directivesPane);
+					// Ignore percentBox.
 					paneBox.add(grammarPane);
 					paneBox.add(trailerPane);
-					contents.add(paneBox);
-					contentPane.add(new JScrollPane(contents), BorderLayout.CENTER);
+					paneBox.add(Box.createVerticalGlue());
+					contentPane.add(new JScrollPane(paneBox), BorderLayout.CENTER);
 
 					setDefaultCloseOperation(EXIT_ON_CLOSE);
 					pack();
